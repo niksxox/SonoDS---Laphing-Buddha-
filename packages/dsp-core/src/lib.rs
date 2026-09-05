@@ -15,6 +15,7 @@ pub mod correlation;
 pub mod width;
 pub mod crossover;
 pub mod multiband_imager;
+pub mod stereoize;
 
 #[cfg(test)]
 mod tests {
