@@ -1,4 +1,4 @@
-# SonoDS — Next-Gen AI Stem Mixer & DAW
+# SonoDS Next-Gen AI Stem Mixer & DAW
 
 SonoDS is an intelligent multitrack audio mixing platform. It analyzes uploaded stems, classifies instrument roles, applies professional mixing rules, refines mixes via LLM reasoning, enforces safe deviation bounds, and renders DSP audio using `pedalboard`.
 
