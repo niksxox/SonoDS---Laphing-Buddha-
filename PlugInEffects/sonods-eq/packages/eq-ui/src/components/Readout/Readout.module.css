@@ -1,0 +1,28 @@
+.readout {
+  pointer-events: auto;
+  font-family: var(--sonods-font-mono);
+  font-size: 19px;
+  font-weight: 700;
+  color: #18181B;
+  letter-spacing: -0.5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: text;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.label { color: #18181B; }
+
+.inlineInput {
+  background: transparent;
+  border: none;
+  color: #18181B;
+  font-family: var(--sonods-font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  width: 110px;
+  outline: none;
+  border-bottom: 2px solid #18181B;
+}

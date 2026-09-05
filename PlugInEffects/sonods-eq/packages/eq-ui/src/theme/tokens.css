@@ -1,0 +1,27 @@
+:root {
+  /* Clean Light Studio Theme matching Hand-Drawn Sketch */
+  --sonods-bg: #FFFFFF;
+  --sonods-panel: #FFFFFF;
+  --sonods-panel-translucent: rgba(255, 255, 255, 0.92);
+  --sonods-curve: #18181B;
+  --sonods-handle: #84CC16;
+  --sonods-handle-border: #65A30D;
+  --sonods-handle-selected: #4D7C0F;
+  --sonods-knob-green: #84CC16;
+  --sonods-knob-gold: #EAB308;
+  --sonods-knob-gold-ring: #FACC15;
+  --sonods-status-green: #22C55E;
+  --sonods-status-amber: #F59E0B;
+  --sonods-status-red: #EF4444;
+  --sonods-text-main: #18181B;
+  --sonods-text-muted: #52525B;
+  --sonods-text-dim: #71717A;
+  --sonods-border: #E4E4E7;
+  --sonods-chassis-border: #18181B;
+  --sonods-radius-chassis: 28px;
+  --sonods-radius-sm: 6px;
+  --sonods-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --sonods-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --sonods-shadow-chassis: 0 20px 45px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+  --sonods-transition-fast: 0.12s ease;
+}

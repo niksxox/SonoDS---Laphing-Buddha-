@@ -1,0 +1,123 @@
+.bandStrip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFFFFF;
+  border: 2px solid #D4D4D8;
+  border-radius: 12px;
+  padding: 8px 4px;
+  gap: 5px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 58px;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+}
+
+.bandStrip.selected {
+  background: #F4F4F5;
+  border-color: #A1A1AA;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.headerRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.bandNumber {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: var(--sonods-font-mono);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.shapeBtn {
+  background: #F4F4F5;
+  border: 1px solid #D4D4D8;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 3px;
+  cursor: pointer;
+  color: #18181B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 44px;
+  box-sizing: border-box;
+  transition: all 0.12s ease;
+}
+
+.shapeBtn:hover {
+  background: #E4E4E7;
+  border-color: #A1A1AA;
+}
+
+.chevron {
+  font-size: 8px;
+  opacity: 0.5;
+}
+
+.shapeMenu {
+  position: absolute;
+  top: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #FFFFFF;
+  border: 1.5px solid #D4D4D8;
+  border-radius: 8px;
+  padding: 3px;
+  z-index: 500;
+  min-width: 84px;
+  width: max-content;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.shapeMenuItem {
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #18181B;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: left;
+  transition: background 0.1s ease;
+}
+
+.shapeMenuItem:hover {
+  background: #F0FDF4;
+  color: #4D7C0F;
+}
+
+.shapeMenuItem.active {
+  background: #84CC16;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.controlsColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}

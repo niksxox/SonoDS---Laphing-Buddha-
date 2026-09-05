@@ -1,0 +1,75 @@
+.toggle-plate {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #111;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.8); /* Recessed bed */
+}
+
+.mode-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s;
+}
+
+.glow-blue { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.6); }
+.glow-red { color: #ef4444; text-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
+
+/* The Switch Track */
+.switch-body {
+  width: 80px;
+  height: 40px;
+  background: #000;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 
+    inset 0 2px 5px rgba(0,0,0,1), 
+    0 1px 0 rgba(255,255,255,0.1);
+  border: 1px solid #222;
+}
+
+/* The Switch Handle (The thing you flip) */
+.switch-handle {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(180deg, #444 0%, #222 100%);
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1); /* Snappy mechanical feel */
+  box-shadow: 
+    0 2px 5px rgba(0,0,0,0.5),
+    inset 0 1px 1px rgba(255,255,255,0.2);
+  border: 1px solid #555;
+}
+
+/* Handle Detail (Grip lines) */
+.switch-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px; height: 10px;
+  background: radial-gradient(circle, #111 20%, transparent 30%);
+  background-size: 4px 4px; /* Grip texture */
+}
+
+/* Movement Logic */
+.toggled-right .switch-handle {
+  transform: translateX(40px);
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%); /* Red when Auto */
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); /* Glow */
+}
+
+.toggled-left .switch-handle {
+  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%); /* Blue when Learning */
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+}

@@ -1,0 +1,16 @@
+{
+  "name": "sonods-gate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SonoDS Gate/Expander Audio Plugin (Pro-G feature set, SonoDS light theme)",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "dev": "pnpm --filter @sonods/gate-demo dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^6.4.3",
+    "vitest": "^1.6.0"
+  }
+}

@@ -1,0 +1,67 @@
+.bottomBar {
+  position: absolute;
+  bottom: 16px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.modePillsRow {
+  pointer-events: auto;
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+
+/* Circular Mode Button matching hand-drawn sketch */
+.sketchPill {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  border-radius: var(--sonods-radius-pill);
+  background: var(--sonods-color-accent);
+  border: 2.5px solid var(--sonods-color-chassis-border);
+  box-shadow: var(--sonods-shadow-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform var(--sonods-transition-fast), box-shadow var(--sonods-transition-smooth), background var(--sonods-transition-smooth);
+}
+
+.sketchPill:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 18px rgba(132, 204, 22, 0.6);
+}
+
+.sketchPill:active {
+  transform: scale(0.95);
+}
+
+.sketchPill.active {
+  background: var(--sonods-color-accent-bright);
+  box-shadow: 0 0 20px rgba(163, 230, 53, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+/* Gold ring motif from sketch */
+.pillInnerRing {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--sonods-radius-pill);
+  border: 2.5px solid var(--sonods-color-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pillIcon {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--sonods-color-panel);
+  letter-spacing: -0.5px;
+}

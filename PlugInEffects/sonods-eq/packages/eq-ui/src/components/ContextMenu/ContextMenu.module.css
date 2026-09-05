@@ -1,0 +1,55 @@
+.contextMenu {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--sonods-color-border);
+  border-radius: var(--sonods-radius-card);
+  box-shadow: var(--sonods-shadow-menu);
+  padding: 6px;
+  min-width: 170px;
+  z-index: 100;
+  font-size: 13px;
+  color: var(--sonods-color-text-main);
+  animation: fadeIn 0.12s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.menuItem {
+  padding: 6px 10px;
+  border-radius: var(--sonods-radius-xs);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background var(--sonods-transition-fast);
+}
+
+.menuItem:hover {
+  background: rgba(132, 204, 22, 0.2);
+  color: #FFFFFF;
+}
+
+.menuItemActive {
+  background: rgba(132, 204, 22, 0.15);
+  color: var(--sonods-color-accent);
+  font-weight: 600;
+}
+
+.menuDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+.deleteItem {
+  color: var(--sonods-color-status-red);
+}
+
+.deleteItem:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #FFFFFF;
+}

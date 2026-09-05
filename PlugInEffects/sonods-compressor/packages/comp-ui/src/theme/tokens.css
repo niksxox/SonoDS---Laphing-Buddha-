@@ -1,0 +1,41 @@
+/* SonoDS Compressor Design Tokens & Theme Stylesheet */
+/* Light Studio Theme — matching SonoDS visual language with Amber/Gold & Dark-Red accent */
+
+:root {
+  /* Surfaces */
+  --comp-bg-base: #FFFFFF;
+  --comp-bg-panel: rgba(255, 255, 255, 0.94);
+  --comp-bg-elevated: #F4F4F5;
+  --comp-bg-input: #FAFAFA;
+  --comp-bg-hover: rgba(0, 0, 0, 0.04);
+  --comp-bg-chassis: #FFFFFF;
+
+  /* Borders */
+  --comp-border-subtle: #E4E4E7;
+  --comp-border-highlight: #D4D4D8;
+  --comp-border-chassis: #18181B;
+
+  /* Typography */
+  --comp-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --comp-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --comp-text-primary: #18181B;
+  --comp-text-secondary: #52525B;
+  --comp-text-muted: #71717A;
+  --comp-text-dim: #A1A1AA;
+
+  /* Compressor Distinctive Identity Accents per Reference Sketch */
+  --comp-accent-knob: #F59E0B;          /* Solid Amber / Gold knob */
+  --comp-accent-knob-glow: rgba(245, 158, 11, 0.25);
+  --comp-accent-pointer: #991B1B;       /* Dark-red pointer line / dot */
+  --comp-accent-plate: #18181B;         /* Hydraulic press metallic plates */
+  --comp-accent-patty: #854D0E;         /* Burger stack layers */
+  --comp-accent-lettuce: #84CC16;
+  --comp-accent-bun: #F59E0B;
+  --comp-accent-meter: #EF4444;         /* Gain reduction downward meter */
+
+  /* Radius & Shadows */
+  --comp-radius-chassis: 16px;
+  --comp-radius-knob: 50%;
+  --comp-shadow-chassis: 0 20px 45px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --comp-shadow-knob: 0 4px 12px rgba(245, 158, 11, 0.25), 0 1px 2px rgba(0, 0, 0, 0.08);
+}

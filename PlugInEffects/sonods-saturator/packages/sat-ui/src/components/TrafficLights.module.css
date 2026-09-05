@@ -1,0 +1,58 @@
+.trafficLights {
+  pointer-events: auto;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  padding: 4px 6px;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.12s ease, filter 0.12s ease;
+  position: relative;
+}
+
+.dot:hover {
+  transform: scale(1.1);
+  filter: brightness(1.08);
+}
+
+.dot:active {
+  transform: scale(0.92);
+}
+
+.glyph {
+  display: block;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.trafficLights:hover .glyph {
+  opacity: 1;
+}
+
+.dotRed {
+  background: #FF5F56;
+  border-color: #E0443E;
+}
+
+.dotAmber {
+  background: #FFBD2E;
+  border-color: #DEA123;
+}
+
+.dotGreen {
+  background: #27C93F;
+  border-color: #1AAB29;
+}

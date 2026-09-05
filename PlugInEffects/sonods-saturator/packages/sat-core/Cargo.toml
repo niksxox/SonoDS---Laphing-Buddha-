@@ -1,0 +1,17 @@
+[package]
+name = "sat_core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "sat_debug"
+path = "src/bin/sat_debug.rs"
+
+[dependencies]
+wasm-bindgen = "0.2"
+
+[dev-dependencies]
+approx = "0.5"

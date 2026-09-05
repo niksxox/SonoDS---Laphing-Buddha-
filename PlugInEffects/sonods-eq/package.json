@@ -1,0 +1,16 @@
+{
+  "name": "sonods-eq-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:dsp": "cargo build --target wasm32-unknown-unknown --release --manifest-path packages/dsp-core/Cargo.toml && node packages/eq-engine/scripts/copy-wasm.mjs",
+    "test:dsp": "cargo test --manifest-path packages/dsp-core/Cargo.toml",
+    "test": "pnpm -r test",
+    "build": "pnpm -r build",
+    "dev": "pnpm --filter @sonods/demo dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  }
+}

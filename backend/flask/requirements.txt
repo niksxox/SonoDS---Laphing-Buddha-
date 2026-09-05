@@ -1,0 +1,11 @@
+flask
+flask-cors
+numpy
+librosa
+joblib
+google-generativeai
+pyloudnorm
+pytest
+pedalboard
+lightgbm
+demucs

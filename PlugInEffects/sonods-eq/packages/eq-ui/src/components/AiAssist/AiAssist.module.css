@@ -1,0 +1,56 @@
+.aiContainer { position: relative; pointer-events: auto; }
+
+.aiButton {
+  background: #FFFFFF;
+  border: 1.5px solid #D4D4D8;
+  border-radius: 6px;
+  color: #18181B;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.aiButton:hover { background: #F4F4F5; border-color: #84CC16; color: #4D7C0F; }
+
+.aiBadge {
+  background: #84CC16;
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.aiDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 6px;
+  background: #FFFFFF;
+  border: 1.5px solid #D4D4D8;
+  border-radius: 8px;
+  padding: 4px;
+  min-width: 180px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.aiOption {
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #18181B;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.aiOption:hover { background: #F0FDF4; color: #4D7C0F; }

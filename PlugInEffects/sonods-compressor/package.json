@@ -1,0 +1,16 @@
+{
+  "name": "sonods-compressor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SonoDS Dynamic Range Compressor Audio Plugin",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "dev": "pnpm --filter @sonods/compressor-demo dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vitest": "^1.6.0"
+  }
+}

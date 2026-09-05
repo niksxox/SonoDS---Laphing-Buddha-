@@ -1,0 +1,16 @@
+{
+  "name": "sonods-saturator-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:dsp": "cargo build --target wasm32-unknown-unknown --release --manifest-path packages/sat-core/Cargo.toml && node packages/sat-engine/scripts/copy-wasm.mjs",
+    "test:dsp": "cargo test --manifest-path packages/sat-core/Cargo.toml",
+    "test": "pnpm -r test",
+    "build": "pnpm -r build",
+    "dev": "pnpm --filter @sonods/saturator-demo dev"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  }
+}
