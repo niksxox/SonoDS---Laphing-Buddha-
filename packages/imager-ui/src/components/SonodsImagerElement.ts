@@ -128,6 +128,23 @@ export class SonodsImagerElement extends HTMLElement {
           min-height: 120px;
         }
 
+        .section-title {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #38bdf8;
+          margin-bottom: 10px;
+        }
+
+        .enhancement-section {
+          background: #090d16;
+          border: 1px solid #1e293b;
+          border-radius: 8px;
+          padding: 14px;
+          margin-bottom: 12px;
+        }
+
         .control-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -162,6 +179,18 @@ export class SonodsImagerElement extends HTMLElement {
           cursor: pointer;
         }
 
+        select {
+          width: 100%;
+          background: #1e293b;
+          color: #f8fafc;
+          border: 1px solid #334155;
+          padding: 6px 10px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
         .toggle-btn {
           background: #1e293b;
           border: 1px solid #334155;
@@ -172,7 +201,6 @@ export class SonodsImagerElement extends HTMLElement {
           font-weight: 600;
           cursor: pointer;
           width: 100%;
-
         }
 
         .toggle-btn.active {
@@ -229,7 +257,41 @@ export class SonodsImagerElement extends HTMLElement {
       </div>
 
       <div class="controls-deck" id="controlsPanel">
-        <!-- Controls rendered dynamically per active tab -->
+        <!-- Tab specific controls rendered dynamically -->
+      </div>
+
+      <!-- Explicitly Separated Stereoize & Recover Sides Section -->
+      <div class="enhancement-section" id="enhancementSection">
+        <div class="section-title">Mono-Safe Enhancements (Opt-In)</div>
+        <div class="control-grid">
+          <div class="control-card">
+            <div class="control-label">
+              <span>Stereoize Mode</span>
+              <span class="control-value" id="val-st-mode">${this.stereoizeMode.toUpperCase()}</span>
+            </div>
+            <select id="stereoizeModeSelect">
+              <option value="off" ${this.stereoizeMode === 'off' ? 'selected' : ''}>Off (Disabled)</option>
+              <option value="mode_i" ${this.stereoizeMode === 'mode_i' ? 'selected' : ''}>Stereoize I (Subtle)</option>
+              <option value="mode_ii" ${this.stereoizeMode === 'mode_ii' ? 'selected' : ''}>Stereoize II (Colorful)</option>
+            </select>
+          </div>
+
+          <div class="control-card">
+            <div class="control-label">
+              <span>Stereoize Depth</span>
+              <span class="control-value" id="val-st-amt">${(this.stereoizeAmount * 100).toFixed(0)}%</span>
+            </div>
+            <input type="range" id="stereoizeAmountSlider" min="0" max="1" step="0.05" value="${this.stereoizeAmount}" />
+          </div>
+
+          <div class="control-card">
+            <div class="control-label">
+              <span>Recover Sides</span>
+              <span class="control-value" id="val-rec-amt">${(this.recoverSidesAmount * 100).toFixed(0)}%</span>
+            </div>
+            <input type="range" id="recoverSidesSlider" min="0" max="1" step="0.05" value="${this.recoverSidesAmount}" />
+          </div>
+        </div>
       </div>
 
       <div class="bottom-bar">
@@ -239,6 +301,7 @@ export class SonodsImagerElement extends HTMLElement {
     `;
 
     this.setupTabs();
+    this.setupEnhancements();
     this.renderTabControls();
   }
 
@@ -262,6 +325,29 @@ export class SonodsImagerElement extends HTMLElement {
     const meter = this.shadowRoot?.querySelector('#correlationMeter') as SonodsCorrelationMeterElement;
     if (scope && scope.render) scope.render();
     if (meter && meter.render) meter.render();
+  }
+
+  private setupEnhancements() {
+    const stSelect = this.shadowRoot!.querySelector('#stereoizeModeSelect') as HTMLSelectElement;
+    stSelect.addEventListener('change', () => {
+      this.stereoizeMode = stSelect.value as 'off' | 'mode_i' | 'mode_ii';
+      this.shadowRoot!.querySelector('#val-st-mode')!.textContent = this.stereoizeMode.toUpperCase();
+      this.emitParamChange('stereoize', { mode: this.stereoizeMode, amount: this.stereoizeAmount });
+    });
+
+    const stSlider = this.shadowRoot!.querySelector('#stereoizeAmountSlider') as HTMLInputElement;
+    stSlider.addEventListener('input', () => {
+      this.stereoizeAmount = parseFloat(stSlider.value);
+      this.shadowRoot!.querySelector('#val-st-amt')!.textContent = `${(this.stereoizeAmount * 100).toFixed(0)}%`;
+      this.emitParamChange('stereoize', { mode: this.stereoizeMode, amount: this.stereoizeAmount });
+    });
+
+    const recSlider = this.shadowRoot!.querySelector('#recoverSidesSlider') as HTMLInputElement;
+    recSlider.addEventListener('input', () => {
+      this.recoverSidesAmount = parseFloat(recSlider.value);
+      this.shadowRoot!.querySelector('#val-rec-amt')!.textContent = `${(this.recoverSidesAmount * 100).toFixed(0)}%`;
+      this.emitParamChange('recoverSides', { value: this.recoverSidesAmount });
+    });
   }
 
   private setupTabs() {
@@ -436,6 +522,14 @@ export class SonodsImagerElement extends HTMLElement {
 
   public getBandWidths(): number[] {
     return [...this.bandWidths];
+  }
+
+  public getStereoizeMode(): string {
+    return this.stereoizeMode;
+  }
+
+  public getRecoverSidesAmount(): number {
+    return this.recoverSidesAmount;
   }
 }
 
