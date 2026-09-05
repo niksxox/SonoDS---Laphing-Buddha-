@@ -1,0 +1,21 @@
+/// SonoDS Stereo Imager — DSP Core
+///
+/// Modules:
+/// - ms_matrix: Mid/Side encode/decode
+/// - correlation: Phase correlation meter
+/// - width: Single-band and per-band width control
+/// - crossover: Multiband crossover (up to 4 bands)
+/// - stereoize: Haas/decorrelation-based mono-to-stereo enhancement
+/// - shuffler: Bass-width workflow control
+/// - asymmetry: L/R balance control
+/// - recover_sides: Side-channel energy recovery during narrowing
+
+pub mod ms_matrix;
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn crate_loads() {
+        assert!(true);
+    }
+}

@@ -1,0 +1,18 @@
+[package]
+name = "dsp-core"
+version = "0.1.0"
+edition = "2021"
+description = "SonoDS Stereo Imager DSP core — M/S matrix, crossovers, per-band width, correlation, stereoize"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+
+[dev-dependencies]
+rand = "0.8"
+
+[profile.release]
+opt-level = 3
+lto = true

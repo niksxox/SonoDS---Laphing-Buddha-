@@ -1,0 +1,16 @@
+{
+  "name": "@sonods/imager-ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SonoDS Stereo Imager — Web Component, canvas rendering, interaction",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "vitest": "^3.0.0"
+  }
+}

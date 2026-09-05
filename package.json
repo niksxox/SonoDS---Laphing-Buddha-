@@ -1,0 +1,14 @@
+{
+  "name": "sonods-imager",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SonoDS Stereo Imager — multiband stereo imaging plugin",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "test": "pnpm -r run test",
+    "dev": "pnpm --filter demo run dev"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
