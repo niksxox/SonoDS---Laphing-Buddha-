@@ -1,0 +1,26 @@
+{
+  "name": "sonods-meter-engine",
+  "version": "0.1.0",
+  "description": "TypeScript engine layer: wasm loader, AudioWorklet, telemetry, file analysis",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "sonods-dsp-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "^5",
+    "vitest": "^3",
+    "vite": "^5"
+  }
+}

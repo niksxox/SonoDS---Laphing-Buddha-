@@ -1,0 +1,15 @@
+[package]
+name = "sonods-dsp-core"
+version = "0.1.0"
+edition = "2021"
+description = "SonoDS Meter DSP core: K-weighting, loudness gating, LRA, true peak, spectrum, correlation"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "sonods_dsp"
+
+[dependencies]
+
+[dev-dependencies]
+approx = "0.5"
