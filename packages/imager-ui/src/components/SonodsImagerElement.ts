@@ -10,6 +10,7 @@ export type ImagerModeTab = 'imager' | 'shuffler' | 'matrix';
 export class SonodsImagerElement extends HTMLElement {
   private activeTab: ImagerModeTab = 'imager';
   private bypassed: boolean = false;
+  private resizeObserver: ResizeObserver | null = null;
 
   constructor() {
     super();
@@ -19,7 +20,9 @@ export class SonodsImagerElement extends HTMLElement {
       <style>
         :host {
           display: block;
-          width: 780px;
+          width: 100%;
+          max-width: 840px;
+          min-width: 480px;
           font-family: var(--sonods-font-sans, Inter, system-ui, sans-serif);
           background: #070a13;
           color: #f8fafc;
@@ -27,6 +30,7 @@ export class SonodsImagerElement extends HTMLElement {
           border-radius: 12px;
           padding: 16px;
           box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+          box-sizing: border-box;
           user-select: none;
         }
 
@@ -37,12 +41,6 @@ export class SonodsImagerElement extends HTMLElement {
           margin-bottom: 12px;
           padding-bottom: 8px;
           border-bottom: 1px solid #1e293b;
-        }
-
-        .title-group {
-          display: flex;
-          align-items: center;
-          gap: 10px;
         }
 
         .brand-logo {
@@ -57,13 +55,25 @@ export class SonodsImagerElement extends HTMLElement {
           font-weight: 600;
           font-size: 14px;
           color: #94a3b8;
+          margin-left: 8px;
         }
 
-        .top-deck {
+        /* Combined Top Display Panel Area */
+        .top-display-panel {
           display: grid;
           grid-template-columns: 280px 1fr;
           gap: 12px;
           margin-bottom: 12px;
+          background: #090d16;
+          padding: 8px;
+          border-radius: 10px;
+          border: 1px solid #1e293b;
+        }
+
+        @media (max-width: 640px) {
+          .top-display-panel {
+            grid-template-columns: 1fr;
+          }
         }
 
         .mid-deck {
@@ -134,13 +144,13 @@ export class SonodsImagerElement extends HTMLElement {
       </style>
 
       <div class="header-bar">
-        <div class="title-group">
+        <div>
           <span class="brand-logo">SonoDS</span>
           <span class="plugin-name">STEREO IMAGER</span>
         </div>
       </div>
 
-      <div class="top-deck">
+      <div class="top-display-panel" id="topDisplayArea">
         <sonods-vectorscope id="vectorscope"></sonods-vectorscope>
         <sonods-correlation-meter id="correlationMeter"></sonods-correlation-meter>
       </div>
@@ -156,7 +166,7 @@ export class SonodsImagerElement extends HTMLElement {
       </div>
 
       <div class="controls-deck" id="controlsPanel">
-        <!-- Controls rendered per active mode tab -->
+        <!-- Tab specific controls rendered dynamically -->
       </div>
 
       <div class="bottom-bar">
@@ -166,6 +176,28 @@ export class SonodsImagerElement extends HTMLElement {
     `;
 
     this.setupTabs();
+  }
+
+  connectedCallback() {
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.handleResize();
+      });
+      this.resizeObserver.observe(this);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+  }
+
+  private handleResize() {
+    const scope = this.shadowRoot?.querySelector('#vectorscope') as SonodsVectorscopeElement;
+    const meter = this.shadowRoot?.querySelector('#correlationMeter') as SonodsCorrelationMeterElement;
+    if (scope && scope.render) scope.render();
+    if (meter && meter.render) meter.render();
   }
 
   private setupTabs() {
