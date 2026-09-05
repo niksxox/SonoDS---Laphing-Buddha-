@@ -12,6 +12,17 @@ export class SonodsImagerElement extends HTMLElement {
   private bypassed: boolean = false;
   private resizeObserver: ResizeObserver | null = null;
 
+  // Shared underlying engine state
+  private numBands: number = 4;
+  private crossovers: [number, number, number] = [140.0, 1500.0, 6000.0];
+  private bandWidths: number[] = [0.0, 1.0, 1.0, 1.0];
+  private stereoizeMode: 'off' | 'mode_i' | 'mode_ii' = 'off';
+  private stereoizeAmount: number = 0.5;
+  private recoverSidesAmount: number = 0.0;
+  private asymmetry: number = 0.0;
+  private soloMid: boolean = false;
+  private soloSide: boolean = false;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -58,7 +69,6 @@ export class SonodsImagerElement extends HTMLElement {
           margin-left: 8px;
         }
 
-        /* Combined Top Display Panel Area */
         .top-display-panel {
           display: grid;
           grid-template-columns: 280px 1fr;
@@ -113,9 +123,62 @@ export class SonodsImagerElement extends HTMLElement {
           background: #0d1322;
           border: 1px solid #1e293b;
           border-radius: 8px;
-          padding: 14px;
+          padding: 16px;
           margin-bottom: 12px;
           min-height: 120px;
+        }
+
+        .control-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+          gap: 16px;
+        }
+
+        .control-card {
+          background: #141c2e;
+          padding: 12px;
+          border-radius: 6px;
+          border: 1px solid #1e293b;
+        }
+
+        .control-label {
+          display: flex;
+          justify-content: space-between;
+          font-size: 11px;
+          font-weight: 600;
+          color: #94a3b8;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+        }
+
+        .control-value {
+          color: #38bdf8;
+          font-family: monospace;
+        }
+
+        input[type="range"] {
+          width: 100%;
+          accent-color: #38bdf8;
+          cursor: pointer;
+        }
+
+        .toggle-btn {
+          background: #1e293b;
+          border: 1px solid #334155;
+          color: #94a3b8;
+          padding: 6px 12px;
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: 600;
+          cursor: pointer;
+          width: 100%;
+
+        }
+
+        .toggle-btn.active {
+          background: #38bdf8;
+          color: #070a13;
+          border-color: #38bdf8;
         }
 
         .bottom-bar {
@@ -166,7 +229,7 @@ export class SonodsImagerElement extends HTMLElement {
       </div>
 
       <div class="controls-deck" id="controlsPanel">
-        <!-- Tab specific controls rendered dynamically -->
+        <!-- Controls rendered dynamically per active tab -->
       </div>
 
       <div class="bottom-bar">
@@ -176,6 +239,7 @@ export class SonodsImagerElement extends HTMLElement {
     `;
 
     this.setupTabs();
+    this.renderTabControls();
   }
 
   connectedCallback() {
@@ -209,6 +273,8 @@ export class SonodsImagerElement extends HTMLElement {
         const tab = (btn as HTMLElement).dataset.tab as ImagerModeTab;
         this.activeTab = tab;
 
+        this.renderTabControls();
+
         this.dispatchEvent(
           new CustomEvent('tab-change', {
             detail: { tab },
@@ -235,12 +301,141 @@ export class SonodsImagerElement extends HTMLElement {
     });
   }
 
+  public renderTabControls() {
+    const panel = this.shadowRoot!.querySelector('#controlsPanel') as HTMLElement;
+    if (!panel) return;
+
+    if (this.activeTab === 'imager') {
+      panel.innerHTML = `
+        <div class="control-grid">
+          ${[0, 1, 2, 3]
+            .map(
+              (b) => `
+            <div class="control-card">
+              <div class="control-label">
+                <span>Band ${b + 1} Width</span>
+                <span class="control-value" id="val-b${b}">${this.bandWidths[b].toFixed(2)}x</span>
+              </div>
+              <input type="range" class="band-slider" data-band="${b}" min="0" max="2" step="0.05" value="${this.bandWidths[b]}" />
+            </div>
+          `
+            )
+            .join('')}
+        </div>
+      `;
+
+      panel.querySelectorAll('.band-slider').forEach((slider) => {
+        slider.addEventListener('input', (e) => {
+          const input = e.target as HTMLInputElement;
+          const b = parseInt(input.dataset.band!);
+          const val = parseFloat(input.value);
+          this.bandWidths[b] = val;
+          panel.querySelector(`#val-b${b}`)!.textContent = `${val.toFixed(2)}x`;
+          this.emitParamChange('bandWidth', { band: b, value: val });
+        });
+      });
+    } else if (this.activeTab === 'shuffler') {
+      panel.innerHTML = `
+        <div class="control-grid">
+          <div class="control-card">
+            <div class="control-label">
+              <span>Bass Cutoff</span>
+              <span class="control-value" id="val-shuf-cutoff">${Math.round(this.crossovers[0])} Hz</span>
+            </div>
+            <input type="range" id="shufCutoff" min="20" max="400" step="5" value="${this.crossovers[0]}" />
+          </div>
+          <div class="control-card">
+            <div class="control-label">
+              <span>Bass Width</span>
+              <span class="control-value" id="val-shuf-width">${this.bandWidths[0].toFixed(2)}x</span>
+            </div>
+            <input type="range" id="shufWidth" min="0" max="2" step="0.05" value="${this.bandWidths[0]}" />
+          </div>
+        </div>
+      `;
+
+      const cutoffSlider = panel.querySelector('#shufCutoff') as HTMLInputElement;
+      cutoffSlider.addEventListener('input', () => {
+        const val = parseFloat(cutoffSlider.value);
+        this.crossovers[0] = val;
+        panel.querySelector('#val-shuf-cutoff')!.textContent = `${Math.round(val)} Hz`;
+        this.emitParamChange('crossovers', { crossovers: [...this.crossovers] });
+      });
+
+      const widthSlider = panel.querySelector('#shufWidth') as HTMLInputElement;
+      widthSlider.addEventListener('input', () => {
+        const val = parseFloat(widthSlider.value);
+        this.bandWidths[0] = val;
+        panel.querySelector('#val-shuf-width')!.textContent = `${val.toFixed(2)}x`;
+        this.emitParamChange('bandWidth', { band: 0, value: val });
+      });
+    } else if (this.activeTab === 'matrix') {
+      panel.innerHTML = `
+        <div class="control-grid">
+          <div class="control-card">
+            <div class="control-label"><span>Mid Solo</span></div>
+            <button class="toggle-btn ${this.soloMid ? 'active' : ''}" id="soloMidBtn">${this.soloMid ? 'SOLO MID (ON)' : 'SOLO MID (OFF)'}</button>
+          </div>
+          <div class="control-card">
+            <div class="control-label"><span>Side Solo</span></div>
+            <button class="toggle-btn ${this.soloSide ? 'active' : ''}" id="soloSideBtn">${this.soloSide ? 'SOLO SIDE (ON)' : 'SOLO SIDE (OFF)'}</button>
+          </div>
+          <div class="control-card">
+            <div class="control-label">
+              <span>Asymmetry</span>
+              <span class="control-value" id="val-matrix-asym">${(this.asymmetry >= 0 ? '+' : '') + this.asymmetry.toFixed(2)}</span>
+            </div>
+            <input type="range" id="matrixAsym" min="-1" max="1" step="0.05" value="${this.asymmetry}" />
+          </div>
+        </div>
+      `;
+
+      const midBtn = panel.querySelector('#soloMidBtn') as HTMLButtonElement;
+      midBtn.addEventListener('click', () => {
+        this.soloMid = !this.soloMid;
+        if (this.soloMid) this.soloSide = false;
+        this.renderTabControls();
+        this.emitParamChange('soloMid', { soloMid: this.soloMid });
+      });
+
+      const sideBtn = panel.querySelector('#soloSideBtn') as HTMLButtonElement;
+      sideBtn.addEventListener('click', () => {
+        this.soloSide = !this.soloSide;
+        if (this.soloSide) this.soloMid = false;
+        this.renderTabControls();
+        this.emitParamChange('soloSide', { soloSide: this.soloSide });
+      });
+
+      const asymSlider = panel.querySelector('#matrixAsym') as HTMLInputElement;
+      asymSlider.addEventListener('input', () => {
+        const val = parseFloat(asymSlider.value);
+        this.asymmetry = val;
+        panel.querySelector('#val-matrix-asym')!.textContent = (val >= 0 ? '+' : '') + val.toFixed(2);
+        this.emitParamChange('asymmetry', { value: val });
+      });
+    }
+  }
+
+  private emitParamChange(name: string, detail: any) {
+    this.dispatchEvent(
+      new CustomEvent('param-change', {
+        detail: { name, ...detail },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  }
+
   public getActiveTab(): ImagerModeTab {
     return this.activeTab;
   }
 
   public isBypassed(): boolean {
     return this.bypassed;
+  }
+
+  public getBandWidths(): number[] {
+    return [...this.bandWidths];
   }
 }
 
