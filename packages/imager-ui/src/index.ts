@@ -1,6 +1,6 @@
 /**
  * @sonods/imager-ui
- * SonoDS Stereo Imager — Web Component, canvas rendering, interaction & public plugin API.
+ * SonoDS Stereo Imager — Web Component, canvas rendering, interaction, public API & factory presets.
  */
 
 export { SonodsImagerElement, type ImagerModeTab } from './components/SonodsImagerElement.js';
@@ -13,5 +13,7 @@ export {
   createSonoDSImager,
   type ImagerState
 } from './plugin.js';
+
+export { FACTORY_PRESETS, type Preset } from './presets.js';
 
 export const UI_VERSION = '0.1.0';

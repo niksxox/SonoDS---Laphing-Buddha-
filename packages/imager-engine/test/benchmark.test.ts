@@ -19,7 +19,7 @@ describe('Engine Telemetry Benchmark (Task 5.3)', () => {
     const start = performance.now();
     const iterations = 1000;
     for (let i = 0; i < iterations; i++) {
-      stream.push(mockTelemetry);
+      stream.emit(mockTelemetry);
     }
     const durationMs = performance.now() - start;
     const avgLatencyMicros = (durationMs / iterations) * 1000;
@@ -29,8 +29,8 @@ describe('Engine Telemetry Benchmark (Task 5.3)', () => {
     console.log(`Average telemetry latency: ${avgLatencyMicros.toFixed(3)} µs per packet`);
     console.log(`-------------------------------------\n`);
 
-    expect(updateCount).toBe(iterations);
-    // Telemetry latency must be under 50 µs per packet (less than 0.1ms)
+    expect(updateCount).toBe(iterations + 1); // +1 for immediate initial snapshot
+    // Telemetry latency must be under 50 µs per packet
     expect(avgLatencyMicros).toBeLessThan(50);
   });
 });
