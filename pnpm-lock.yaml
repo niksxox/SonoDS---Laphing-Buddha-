@@ -9,6 +9,13 @@ importers:
   .: {}
 
   apps/demo:
+    dependencies:
+      '@sonods/imager-engine':
+        specifier: workspace:*
+        version: link:../../packages/imager-engine
+      '@sonods/imager-ui':
+        specifier: workspace:*
+        version: link:../../packages/imager-ui
     devDependencies:
       vite:
         specifier: ^6.0.0
