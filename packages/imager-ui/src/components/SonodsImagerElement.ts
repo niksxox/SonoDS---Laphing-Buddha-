@@ -707,10 +707,11 @@ export class SonodsImagerElement extends HTMLElement {
   ) {
     if (!el) return;
     el.setAttribute('tabindex', '0');
-    el.setAttribute('title', 'Click or double-click to edit value');
+    el.setAttribute('title', 'Double-click to edit value');
     el.style.cursor = 'pointer';
 
-    const startEdit = () => {
+    const startEdit = (e?: Event) => {
+      if (e) e.stopPropagation();
       if (el.querySelector('input')) return; // Already editing
       const currentText = el.textContent || '';
       const input = document.createElement('input');
@@ -734,7 +735,7 @@ export class SonodsImagerElement extends HTMLElement {
         } else {
           parsed = parseFloat(raw);
         }
-        if (isNaN(parsed)) {
+        if (isNaN(parsed) || raw === '') {
           el.textContent = currentText;
           return;
         }
@@ -749,31 +750,33 @@ export class SonodsImagerElement extends HTMLElement {
         el.textContent = currentText;
       };
 
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
+      input.addEventListener('keydown', (evt: KeyboardEvent) => {
+        if (evt.key === 'Enter') {
+          evt.preventDefault();
+          evt.stopPropagation();
           commit();
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
+        } else if (evt.key === 'Escape') {
+          evt.preventDefault();
+          evt.stopPropagation();
           cancel();
         }
       });
 
       input.addEventListener('blur', () => {
-        commit();
+        // Small timeout to allow Enter keydown handler to process first
+        setTimeout(() => {
+          if (!committed) {
+            commit();
+          }
+        }, 10);
       });
     };
 
     el.addEventListener('dblclick', startEdit);
-    el.addEventListener('click', () => {
-      if (document.activeElement === el) {
-        startEdit();
-      }
-    });
-    el.addEventListener('keydown', (e) => {
+    el.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        startEdit();
+        startEdit(e);
       }
     });
   }
