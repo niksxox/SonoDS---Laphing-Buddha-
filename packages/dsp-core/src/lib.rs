@@ -18,6 +18,7 @@ pub mod multiband_imager;
 pub mod stereoize;
 pub mod shuffler;
 pub mod asymmetry;
+pub mod recover_sides;
 
 #[cfg(test)]
 mod tests {
