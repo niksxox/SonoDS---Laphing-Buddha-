@@ -810,6 +810,70 @@ export class SonodsImagerElement extends HTMLElement {
   public getRecoverSidesAmount(): number {
     return this.recoverSidesAmount;
   }
+
+  public updateTelemetry(telemetry: any) {
+    const scope = this.shadowRoot?.querySelector('#vectorscope') as SonodsVectorscopeElement;
+    const meter = this.shadowRoot?.querySelector('#correlationMeter') as SonodsCorrelationMeterElement;
+    const display = this.shadowRoot?.querySelector('#multibandDisplay') as SonodsMultibandDisplayElement;
+
+    if (scope && telemetry.vectorscopeSamples) {
+      const samples = Array.isArray(telemetry.vectorscopeSamples)
+        ? telemetry.vectorscopeSamples
+        : Array.from(telemetry.vectorscopeSamples as Float32Array);
+      scope.updateSamples(samples);
+    }
+    if (meter && typeof telemetry.correlation === 'number') {
+      meter.updateTelemetry(telemetry.correlation);
+    }
+    if (display && telemetry.bandCorrelations) {
+      display.updateTelemetry(telemetry.bandCorrelations, this.bandWidths);
+    }
+  }
+
+  public getState() {
+    return {
+      bypassed: this.bypassed,
+      activeTab: this.activeTab,
+      numBands: this.numBands,
+      crossovers: [...this.crossovers] as [number, number, number],
+      bandWidths: [...this.bandWidths],
+      stereoizeMode: this.stereoizeMode,
+      stereoizeAmount: this.stereoizeAmount,
+      recoverSidesAmount: this.recoverSidesAmount,
+      asymmetry: this.asymmetry,
+      soloMid: this.soloMid,
+      soloSide: this.soloSide,
+    };
+  }
+
+  public setState(state: Partial<any>) {
+    if (typeof state.bypassed === 'boolean') this.bypassed = state.bypassed;
+    if (state.activeTab) this.activeTab = state.activeTab;
+    if (typeof state.numBands === 'number') this.numBands = state.numBands;
+    if (state.crossovers) this.crossovers = [...state.crossovers];
+    if (state.bandWidths) this.bandWidths = [...state.bandWidths];
+    if (state.stereoizeMode) this.stereoizeMode = state.stereoizeMode;
+    if (typeof state.stereoizeAmount === 'number') this.stereoizeAmount = state.stereoizeAmount;
+    if (typeof state.recoverSidesAmount === 'number') this.recoverSidesAmount = state.recoverSidesAmount;
+    if (typeof state.asymmetry === 'number') this.asymmetry = state.asymmetry;
+    if (typeof state.soloMid === 'boolean') this.soloMid = state.soloMid;
+    if (typeof state.soloSide === 'boolean') this.soloSide = state.soloSide;
+
+    const bypassBtn = this.shadowRoot?.querySelector('#bypassBtn') as HTMLButtonElement;
+    if (bypassBtn) {
+      bypassBtn.textContent = this.bypassed ? 'BYPASS' : 'IN';
+      bypassBtn.classList.toggle('bypassed', this.bypassed);
+      bypassBtn.setAttribute('aria-pressed', this.bypassed ? 'true' : 'false');
+    }
+
+    const stSelect = this.shadowRoot?.querySelector('#stereoizeModeSelect') as HTMLSelectElement;
+    if (stSelect) stSelect.value = this.stereoizeMode;
+
+    const display = this.shadowRoot?.querySelector('#multibandDisplay') as SonodsMultibandDisplayElement;
+    if (display) display.setCrossovers(this.crossovers[0], this.crossovers[1], this.crossovers[2]);
+
+    this.renderTabControls();
+  }
 }
 
 if (!customElements.get('sonods-imager')) {

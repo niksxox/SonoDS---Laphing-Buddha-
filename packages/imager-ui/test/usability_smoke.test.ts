@@ -33,14 +33,28 @@ describe('Usability Smoke Test Suite (Task 4.6)', () => {
     const canvas = display.shadowRoot?.querySelector('canvas') as HTMLCanvasElement;
     expect(canvas).not.toBeNull();
 
+    // Mock getBoundingClientRect so clientX maps to canvas coordinates (600px width)
+    canvas.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 600,
+      height: 160,
+      right: 600,
+      bottom: 160,
+      x: 0,
+      y: 0,
+      toJSON: () => {}
+    });
+
     const crossoverListener = vi.fn();
     display.addEventListener('crossover-change', crossoverListener);
 
-    // Simulate pointerdown on Crossover Handle 0 (~140Hz position)
-    canvas.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, clientY: 50, pointerId: 1 }));
-    // Simulate pointermove to drag handle right
-    canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: 150, clientY: 50, pointerId: 1 }));
-    canvas.dispatchEvent(new PointerEvent('pointerup', { clientX: 150, clientY: 50, pointerId: 1 }));
+    // Initial crossover 0 is ~140Hz which maps to freqToX(140, 600) ~ 169px
+    const handle0X = 169;
+
+    canvas.dispatchEvent(new PointerEvent('pointerdown', { clientX: handle0X, clientY: 50, pointerId: 1 }));
+    canvas.dispatchEvent(new PointerEvent('pointermove', { clientX: handle0X + 50, clientY: 50, pointerId: 1 }));
+    canvas.dispatchEvent(new PointerEvent('pointerup', { clientX: handle0X + 50, clientY: 50, pointerId: 1 }));
 
     // Expect crossovers to be updated and event emitted
     expect(crossoverListener).toHaveBeenCalled();
@@ -111,11 +125,16 @@ describe('Usability Smoke Test Suite (Task 4.6)', () => {
     const display = imagerUI.shadowRoot?.querySelector('#multibandDisplay') as SonodsMultibandDisplayElement;
 
     // Stream mock telemetry sample pairs
-    const samples = new Float32Array([0.5, 0.5, -0.3, 0.3, 0.8, -0.8]);
+    const samples = [0.5, 0.5, -0.3, 0.3, 0.8, -0.8];
     expect(() => {
-      scope.pushTelemetrySamples(samples);
+      scope.updateSamples(samples);
       meter.updateTelemetry(0.85);
       display.updateTelemetry([0.9, 0.8, 0.7, 0.6], [0.0, 1.0, 1.2, 1.5]);
+      imagerUI.updateTelemetry({
+        vectorscopeSamples: samples,
+        correlation: 0.85,
+        bandCorrelations: [0.9, 0.8, 0.7, 0.6]
+      });
     }).not.toThrow();
   });
 });
