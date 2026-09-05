@@ -1,0 +1,22 @@
+{
+  "name": "sonods-reverb",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SonoDS Reverb — algorithmic reverb plugin with per-frequency decay control",
+  "scripts": {
+    "build:dsp": "powershell -Command \"$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User'); wasm-pack build packages/dsp-core --target web --out-dir ../reverb-engine/src/wasm\"",
+    "build:engine": "pnpm --filter @sonods/reverb-engine build",
+    "build:ui": "pnpm --filter @sonods/reverb-ui build",
+    "build": "pnpm build:dsp && pnpm build:engine && pnpm build:ui",
+    "dev": "pnpm --filter @sonods/demo dev",
+    "test": "pnpm -r test",
+    "test:dsp": "cd packages/dsp-core && cargo test",
+    "test:engine": "pnpm --filter @sonods/reverb-engine test",
+    "test:ui": "pnpm --filter @sonods/reverb-ui test",
+    "lint": "pnpm -r lint"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
