@@ -1,4 +1,4 @@
-import { SonodsImagerElement, type ImagerModeTab } from './components/SonodsImagerElement.js';
+import { SonodsImagerElement, type ImagerModeTab } from './components/SonodsImagerElement';
 import type { SonodsImagerNode, ImagerTelemetry } from '@sonods/imager-engine';
 
 export interface ImagerState {

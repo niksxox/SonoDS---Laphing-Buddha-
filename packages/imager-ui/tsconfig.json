@@ -11,7 +11,11 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "lib": ["ES2022", "DOM"]
+    "lib": ["ES2022", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "@sonods/imager-engine": ["../imager-engine/dist/index.d.ts"]
+    }
   },
   "include": ["src"]
 }

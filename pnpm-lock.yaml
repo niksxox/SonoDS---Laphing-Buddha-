@@ -34,6 +34,10 @@ importers:
         version: 0.15.0
 
   packages/imager-ui:
+    dependencies:
+      '@sonods/imager-engine':
+        specifier: workspace:*
+        version: link:../imager-engine
     devDependencies:
       happy-dom:
         specifier: ^20.14.0

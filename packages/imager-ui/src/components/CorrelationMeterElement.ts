@@ -72,6 +72,10 @@ export class SonodsCorrelationMeterElement extends HTMLElement {
     this.render();
   }
 
+  public updateTelemetry(val: number) {
+    this.updateCorrelation(val);
+  }
+
   public render() {
     // Update numeric readout text and color regardless of canvas 2D support
     const readoutEl = this.shadowRoot!.querySelector('#numReadout') as HTMLElement;

@@ -76,6 +76,18 @@ export class SonodsImagerNode extends BaseNode {
     this.port.postMessage({ type: 'PARAM', name: 'recoverSides', value: amount });
   }
 
+  public setBypass(bypassed: boolean): void {
+    this.port.postMessage({ type: 'PARAM', name: 'bypass', value: bypassed });
+  }
+
+  public setSoloMid(soloMid: boolean): void {
+    this.port.postMessage({ type: 'PARAM', name: 'soloMid', value: soloMid });
+  }
+
+  public setSoloSide(soloSide: boolean): void {
+    this.port.postMessage({ type: 'PARAM', name: 'soloSide', value: soloSide });
+  }
+
   public onTelemetry(callback: (telemetry: ImagerTelemetry) => void): () => void {
     this.telemetryCallbacks.add(callback);
     return () => {

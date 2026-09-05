@@ -9,6 +9,9 @@
     "build": "tsc",
     "test": "vitest run"
   },
+  "dependencies": {
+    "@sonods/imager-engine": "workspace:*"
+  },
   "devDependencies": {
     "happy-dom": "^20.14.0",
     "typescript": "^5.5.0",

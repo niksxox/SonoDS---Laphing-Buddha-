@@ -835,7 +835,7 @@ export class SonodsImagerElement extends HTMLElement {
       bypassed: this.bypassed,
       activeTab: this.activeTab,
       numBands: this.numBands,
-      crossovers: [...this.crossovers] as [number, number, number],
+      crossovers: [this.crossovers[0], this.crossovers[1], this.crossovers[2]] as [number, number, number],
       bandWidths: [...this.bandWidths],
       stereoizeMode: this.stereoizeMode,
       stereoizeAmount: this.stereoizeAmount,
@@ -850,7 +850,9 @@ export class SonodsImagerElement extends HTMLElement {
     if (typeof state.bypassed === 'boolean') this.bypassed = state.bypassed;
     if (state.activeTab) this.activeTab = state.activeTab;
     if (typeof state.numBands === 'number') this.numBands = state.numBands;
-    if (state.crossovers) this.crossovers = [...state.crossovers];
+    if (state.crossovers && state.crossovers.length >= 3) {
+      this.crossovers = [state.crossovers[0], state.crossovers[1], state.crossovers[2]];
+    }
     if (state.bandWidths) this.bandWidths = [...state.bandWidths];
     if (state.stereoizeMode) this.stereoizeMode = state.stereoizeMode;
     if (typeof state.stereoizeAmount === 'number') this.stereoizeAmount = state.stereoizeAmount;
