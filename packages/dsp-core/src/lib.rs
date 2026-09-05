@@ -13,6 +13,7 @@
 pub mod ms_matrix;
 pub mod correlation;
 pub mod width;
+pub mod crossover;
 
 #[cfg(test)]
 mod tests {
