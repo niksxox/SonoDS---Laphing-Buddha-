@@ -11,6 +11,7 @@
 /// - recover_sides: Side-channel energy recovery during narrowing
 
 pub mod ms_matrix;
+pub mod correlation;
 
 #[cfg(test)]
 mod tests {
