@@ -12,6 +12,7 @@
 
 pub mod ms_matrix;
 pub mod correlation;
+pub mod width;
 
 #[cfg(test)]
 mod tests {
