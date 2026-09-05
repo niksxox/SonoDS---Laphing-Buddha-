@@ -14,6 +14,7 @@ pub mod ms_matrix;
 pub mod correlation;
 pub mod width;
 pub mod crossover;
+pub mod multiband_imager;
 
 #[cfg(test)]
 mod tests {
