@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import '../src/components/SonodsImagerElement';
 import { createSonoDSImager, SonoDSImagerPlugin } from '../src/plugin';
 
 describe('Public Plugin API (Task 5.1)', () => {
