@@ -21,6 +21,9 @@ pub mod asymmetry;
 pub mod recover_sides;
 
 #[cfg(test)]
+pub mod fuzz_tests;
+
+#[cfg(test)]
 mod tests {
     #[test]
     fn crate_loads() {
