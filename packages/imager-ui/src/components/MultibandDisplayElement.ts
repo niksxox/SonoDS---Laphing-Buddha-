@@ -51,13 +51,33 @@ export class SonodsMultibandDisplayElement extends HTMLElement {
           background: #040711;
           border-radius: 6px;
         }
+        .handle-focus-ring {
+          display: flex;
+          justify-content: space-around;
+          margin-top: 6px;
+        }
+        .handle-btn {
+          background: #1e293b;
+          border: 1px solid #f59e0b;
+          color: #f59e0b;
+          font-size: 10px;
+          font-family: monospace;
+          padding: 2px 8px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .handle-btn:focus {
+          outline: 2px solid #38bdf8;
+          box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+        }
       </style>
       <div class="container">
         <div class="header">
           <span>Multiband Spectrum & Crossovers</span>
-          <span id="crossoverReadout" style="font-family: monospace; color: #38bdf8;">140Hz | 1.5kHz | 6.0kHz</span>
+          <span id="crossoverReadout" class="crossover-readout-text" style="font-family: monospace; color: #38bdf8; cursor: pointer;" title="Double-click to edit crossover frequencies">140Hz | 1.5kHz | 6.0kHz</span>
         </div>
-        <canvas id="displayCanvas" width="600" height="160"></canvas>
+        <canvas id="displayCanvas" width="600" height="160" tabindex="0" aria-label="Multiband Frequency Crossovers Display"></canvas>
+        <div class="handle-focus-ring" id="handleFocusRing"></div>
       </div>
     `;
 
@@ -65,6 +85,7 @@ export class SonodsMultibandDisplayElement extends HTMLElement {
     this.ctx = this.canvas.getContext ? this.canvas.getContext('2d') : null;
 
     this.setupInteractivity();
+    this.setupKeyboardAccess();
   }
 
   connectedCallback() {
@@ -157,6 +178,42 @@ export class SonodsMultibandDisplayElement extends HTMLElement {
     this.canvas.addEventListener('pointerup', handlePointerUp);
   }
 
+  private setupKeyboardAccess() {
+    this.canvas.addEventListener('keydown', (e: KeyboardEvent) => {
+      // Allow selecting handles with number 1, 2, 3 or Tab
+      const numHandles = this.numBands - 1;
+      let targetIdx = this.activeDragIndex !== null ? this.activeDragIndex : 0;
+      let step = 0;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+        step = e.shiftKey ? 50 : 5;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+        step = e.shiftKey ? -50 : -5;
+      } else if (e.key === 'PageUp') {
+        step = 100;
+      } else if (e.key === 'PageDown') {
+        step = -100;
+      } else return;
+
+      e.preventDefault();
+      const idx = targetIdx;
+      const minF = idx === 0 ? 20 : this.crossovers[idx - 1] + 10;
+      const maxF = idx === this.crossovers.length - 1 ? 20000 : this.crossovers[idx + 1] - 10;
+      const newFreq = Math.max(minF, Math.min(maxF, this.crossovers[idx] + step));
+
+      this.crossovers[idx] = Math.round(newFreq);
+      this.render();
+
+      this.dispatchEvent(
+        new CustomEvent('crossover-change', {
+          detail: { crossovers: [...this.crossovers] },
+          bubbles: true,
+          composed: true,
+        })
+      );
+    });
+  }
+
   public render() {
     const width = this.canvas.width || 600;
     const height = this.canvas.height || 160;
@@ -166,6 +223,59 @@ export class SonodsMultibandDisplayElement extends HTMLElement {
     if (readoutEl) {
       const formatF = (f: number) => (f >= 1000 ? `${(f / 1000).toFixed(1)}kHz` : `${Math.round(f)}Hz`);
       readoutEl.textContent = `${formatF(this.crossovers[0])} | ${formatF(this.crossovers[1])} | ${formatF(this.crossovers[2])}`;
+    }
+
+    // Update handle focus ring buttons
+    const ring = this.shadowRoot!.querySelector('#handleFocusRing') as HTMLElement;
+    if (ring) {
+      const numHandles = this.numBands - 1;
+      ring.innerHTML = '';
+      for (let i = 0; i < numHandles; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'handle-btn';
+        btn.setAttribute('role', 'slider');
+        btn.setAttribute('aria-label', `Crossover ${i + 1} Frequency`);
+        const minF = i === 0 ? 20 : this.crossovers[i - 1] + 10;
+        const maxF = i === this.crossovers.length - 1 ? 20000 : this.crossovers[i + 1] - 10;
+        btn.setAttribute('aria-valuemin', minF.toString());
+        btn.setAttribute('aria-valuemax', maxF.toString());
+        btn.setAttribute('aria-valuenow', Math.round(this.crossovers[i]).toString());
+        const formatF = (f: number) => (f >= 1000 ? `${(f / 1000).toFixed(1)}kHz` : `${Math.round(f)}Hz`);
+        btn.textContent = `X-Over ${i + 1}: ${formatF(this.crossovers[i])}`;
+
+        btn.addEventListener('keydown', (e: KeyboardEvent) => {
+          let step = 0;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+            step = e.shiftKey ? 50 : 5;
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+            step = e.shiftKey ? -50 : -5;
+          } else if (e.key === 'PageUp') {
+            step = 100;
+          } else if (e.key === 'PageDown') {
+            step = -100;
+          } else if (e.key === 'Home') {
+            step = minF - this.crossovers[i];
+          } else if (e.key === 'End') {
+            step = maxF - this.crossovers[i];
+          } else {
+            return;
+          }
+
+          e.preventDefault();
+          const newFreq = Math.max(minF, Math.min(maxF, this.crossovers[i] + step));
+          this.crossovers[i] = Math.round(newFreq);
+          this.render();
+          this.dispatchEvent(
+            new CustomEvent('crossover-change', {
+              detail: { crossovers: [...this.crossovers] },
+              bubbles: true,
+              composed: true,
+            })
+          );
+        });
+
+        ring.appendChild(btn);
+      }
     }
 
     if (!this.ctx) return;

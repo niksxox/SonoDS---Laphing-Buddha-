@@ -171,6 +171,28 @@ export class SonodsImagerElement extends HTMLElement {
         .control-value {
           color: #38bdf8;
           font-family: monospace;
+          padding: 1px 4px;
+          border-radius: 3px;
+          transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .control-value:hover, .control-value:focus {
+          background: #1e293b;
+          color: #7dd3fc;
+          outline: 1px solid #38bdf8;
+        }
+
+        .inline-numeric-input {
+          width: 50px;
+          background: #0f172a;
+          color: #38bdf8;
+          border: 1px solid #38bdf8;
+          border-radius: 3px;
+          font-family: monospace;
+          font-size: 11px;
+          padding: 1px 3px;
+          text-align: right;
+          outline: none;
         }
 
         input[type="range"] {
@@ -329,62 +351,161 @@ export class SonodsImagerElement extends HTMLElement {
 
   private setupEnhancements() {
     const stSelect = this.shadowRoot!.querySelector('#stereoizeModeSelect') as HTMLSelectElement;
-    stSelect.addEventListener('change', () => {
-      this.stereoizeMode = stSelect.value as 'off' | 'mode_i' | 'mode_ii';
-      this.shadowRoot!.querySelector('#val-st-mode')!.textContent = this.stereoizeMode.toUpperCase();
-      this.emitParamChange('stereoize', { mode: this.stereoizeMode, amount: this.stereoizeAmount });
-    });
+    if (stSelect) {
+      stSelect.setAttribute('aria-label', 'Stereoize Mode');
+      stSelect.addEventListener('change', () => {
+        this.stereoizeMode = stSelect.value as 'off' | 'mode_i' | 'mode_ii';
+        this.shadowRoot!.querySelector('#val-st-mode')!.textContent = this.stereoizeMode.toUpperCase();
+        this.emitParamChange('stereoize', { mode: this.stereoizeMode, amount: this.stereoizeAmount });
+      });
+    }
 
     const stSlider = this.shadowRoot!.querySelector('#stereoizeAmountSlider') as HTMLInputElement;
-    stSlider.addEventListener('input', () => {
-      this.stereoizeAmount = parseFloat(stSlider.value);
-      this.shadowRoot!.querySelector('#val-st-amt')!.textContent = `${(this.stereoizeAmount * 100).toFixed(0)}%`;
-      this.emitParamChange('stereoize', { mode: this.stereoizeMode, amount: this.stereoizeAmount });
-    });
+    if (stSlider) {
+      stSlider.setAttribute('role', 'slider');
+      stSlider.setAttribute('aria-label', 'Stereoize Depth');
+      stSlider.setAttribute('aria-valuemin', '0');
+      stSlider.setAttribute('aria-valuemax', '1');
+      stSlider.setAttribute('aria-valuenow', this.stereoizeAmount.toString());
+
+      stSlider.addEventListener('input', () => {
+        this.stereoizeAmount = parseFloat(stSlider.value);
+        stSlider.setAttribute('aria-valuenow', this.stereoizeAmount.toString());
+        this.shadowRoot!.querySelector('#val-st-amt')!.textContent = `${(this.stereoizeAmount * 100).toFixed(0)}%`;
+        this.emitParamChange('stereoize', { mode: this.stereoizeMode, amount: this.stereoizeAmount });
+      });
+    }
+
+    const valStAmt = this.shadowRoot!.querySelector('#val-st-amt') as HTMLElement;
+    this.attachNumericEntry(
+      valStAmt,
+      0.0,
+      1.0,
+      (val) => `${(val * 100).toFixed(0)}%`,
+      (val) => {
+        this.stereoizeAmount = val;
+        if (stSlider) {
+          stSlider.value = val.toString();
+          stSlider.setAttribute('aria-valuenow', val.toString());
+        }
+        this.emitParamChange('stereoize', { mode: this.stereoizeMode, amount: this.stereoizeAmount });
+      }
+    );
 
     const recSlider = this.shadowRoot!.querySelector('#recoverSidesSlider') as HTMLInputElement;
-    recSlider.addEventListener('input', () => {
-      this.recoverSidesAmount = parseFloat(recSlider.value);
-      this.shadowRoot!.querySelector('#val-rec-amt')!.textContent = `${(this.recoverSidesAmount * 100).toFixed(0)}%`;
-      this.emitParamChange('recoverSides', { value: this.recoverSidesAmount });
-    });
+    if (recSlider) {
+      recSlider.setAttribute('role', 'slider');
+      recSlider.setAttribute('aria-label', 'Recover Sides Depth');
+      recSlider.setAttribute('aria-valuemin', '0');
+      recSlider.setAttribute('aria-valuemax', '1');
+      recSlider.setAttribute('aria-valuenow', this.recoverSidesAmount.toString());
+
+      recSlider.addEventListener('input', () => {
+        this.recoverSidesAmount = parseFloat(recSlider.value);
+        recSlider.setAttribute('aria-valuenow', this.recoverSidesAmount.toString());
+        this.shadowRoot!.querySelector('#val-rec-amt')!.textContent = `${(this.recoverSidesAmount * 100).toFixed(0)}%`;
+        this.emitParamChange('recoverSides', { value: this.recoverSidesAmount });
+      });
+    }
+
+    const valRecAmt = this.shadowRoot!.querySelector('#val-rec-amt') as HTMLElement;
+    this.attachNumericEntry(
+      valRecAmt,
+      0.0,
+      1.0,
+      (val) => `${(val * 100).toFixed(0)}%`,
+      (val) => {
+        this.recoverSidesAmount = val;
+        if (recSlider) {
+          recSlider.value = val.toString();
+          recSlider.setAttribute('aria-valuenow', val.toString());
+        }
+        this.emitParamChange('recoverSides', { value: this.recoverSidesAmount });
+      }
+    );
   }
 
   private setupTabs() {
-    const tabBtns = this.shadowRoot!.querySelectorAll('.tab-btn');
-    tabBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        tabBtns.forEach((b) => b.classList.remove('active'));
-        btn.classList.add('active');
-        const tab = (btn as HTMLElement).dataset.tab as ImagerModeTab;
-        this.activeTab = tab;
+    const tabList = this.shadowRoot!.querySelector('.mode-tabs') as HTMLElement;
+    if (tabList) {
+      tabList.setAttribute('role', 'tablist');
+      tabList.setAttribute('aria-label', 'Plugin Operating Modes');
+    }
 
-        this.renderTabControls();
+    const tabBtns = Array.from(this.shadowRoot!.querySelectorAll('.tab-btn')) as HTMLButtonElement[];
+    tabBtns.forEach((btn, index) => {
+      const tabName = btn.dataset.tab as ImagerModeTab;
+      btn.setAttribute('role', 'tab');
+      btn.setAttribute('aria-selected', tabName === this.activeTab ? 'true' : 'false');
+      btn.setAttribute('tabindex', tabName === this.activeTab ? '0' : '-1');
+
+      btn.addEventListener('click', () => {
+        this.selectTab(tabName);
+      });
+
+      btn.addEventListener('keydown', (e: KeyboardEvent) => {
+        let nextIndex = index;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          nextIndex = (index + 1) % tabBtns.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          nextIndex = (index - 1 + tabBtns.length) % tabBtns.length;
+        } else if (e.key === 'Home') {
+          nextIndex = 0;
+        } else if (e.key === 'End') {
+          nextIndex = tabBtns.length - 1;
+        } else {
+          return;
+        }
+
+        e.preventDefault();
+        tabBtns[nextIndex].focus();
+        const nextTab = tabBtns[nextIndex].dataset.tab as ImagerModeTab;
+        this.selectTab(nextTab);
+      });
+    });
+
+    const bypassBtn = this.shadowRoot!.querySelector('#bypassBtn') as HTMLButtonElement;
+    if (bypassBtn) {
+      bypassBtn.setAttribute('role', 'button');
+      bypassBtn.setAttribute('aria-label', 'Bypass Plugin Processing');
+      bypassBtn.setAttribute('aria-pressed', this.bypassed ? 'true' : 'false');
+
+      bypassBtn.addEventListener('click', () => {
+        this.bypassed = !this.bypassed;
+        bypassBtn.textContent = this.bypassed ? 'BYPASS' : 'IN';
+        bypassBtn.classList.toggle('bypassed', this.bypassed);
+        bypassBtn.setAttribute('aria-pressed', this.bypassed ? 'true' : 'false');
 
         this.dispatchEvent(
-          new CustomEvent('tab-change', {
-            detail: { tab },
+          new CustomEvent('bypass-change', {
+            detail: { bypassed: this.bypassed },
             bubbles: true,
             composed: true,
           })
         );
       });
+    }
+  }
+
+  private selectTab(tab: ImagerModeTab) {
+    this.activeTab = tab;
+    const tabBtns = Array.from(this.shadowRoot!.querySelectorAll('.tab-btn')) as HTMLButtonElement[];
+    tabBtns.forEach((b) => {
+      const isSelected = b.dataset.tab === tab;
+      b.classList.toggle('active', isSelected);
+      b.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+      b.setAttribute('tabindex', isSelected ? '0' : '-1');
     });
 
-    const bypassBtn = this.shadowRoot!.querySelector('#bypassBtn') as HTMLButtonElement;
-    bypassBtn.addEventListener('click', () => {
-      this.bypassed = !this.bypassed;
-      bypassBtn.textContent = this.bypassed ? 'BYPASS' : 'IN';
-      bypassBtn.classList.toggle('bypassed', this.bypassed);
+    this.renderTabControls();
 
-      this.dispatchEvent(
-        new CustomEvent('bypass-change', {
-          detail: { bypassed: this.bypassed },
-          bubbles: true,
-          composed: true,
-        })
-      );
-    });
+    this.dispatchEvent(
+      new CustomEvent('tab-change', {
+        detail: { tab },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   public renderTabControls() {
@@ -402,7 +523,8 @@ export class SonodsImagerElement extends HTMLElement {
                 <span>Band ${b + 1} Width</span>
                 <span class="control-value" id="val-b${b}">${this.bandWidths[b].toFixed(2)}x</span>
               </div>
-              <input type="range" class="band-slider" data-band="${b}" min="0" max="2" step="0.05" value="${this.bandWidths[b]}" />
+              <input type="range" class="band-slider" data-band="${b}" min="0" max="2" step="0.05" value="${this.bandWidths[b]}"
+                role="slider" aria-label="Band ${b + 1} Width" aria-valuemin="0" aria-valuemax="2" aria-valuenow="${this.bandWidths[b]}" />
             </div>
           `
             )
@@ -416,9 +538,29 @@ export class SonodsImagerElement extends HTMLElement {
           const b = parseInt(input.dataset.band!);
           const val = parseFloat(input.value);
           this.bandWidths[b] = val;
+          input.setAttribute('aria-valuenow', val.toString());
           panel.querySelector(`#val-b${b}`)!.textContent = `${val.toFixed(2)}x`;
           this.emitParamChange('bandWidth', { band: b, value: val });
         });
+      });
+
+      [0, 1, 2, 3].forEach((b) => {
+        const valEl = panel.querySelector(`#val-b${b}`) as HTMLElement;
+        const slider = panel.querySelector(`.band-slider[data-band="${b}"]`) as HTMLInputElement;
+        this.attachNumericEntry(
+          valEl,
+          0.0,
+          2.0,
+          (val) => `${val.toFixed(2)}x`,
+          (val) => {
+            this.bandWidths[b] = val;
+            if (slider) {
+              slider.value = val.toString();
+              slider.setAttribute('aria-valuenow', val.toString());
+            }
+            this.emitParamChange('bandWidth', { band: b, value: val });
+          }
+        );
       });
     } else if (this.activeTab === 'shuffler') {
       panel.innerHTML = `
@@ -428,14 +570,16 @@ export class SonodsImagerElement extends HTMLElement {
               <span>Bass Cutoff</span>
               <span class="control-value" id="val-shuf-cutoff">${Math.round(this.crossovers[0])} Hz</span>
             </div>
-            <input type="range" id="shufCutoff" min="20" max="400" step="5" value="${this.crossovers[0]}" />
+            <input type="range" id="shufCutoff" min="20" max="400" step="5" value="${this.crossovers[0]}"
+              role="slider" aria-label="Bass Cutoff Frequency" aria-valuemin="20" aria-valuemax="400" aria-valuenow="${this.crossovers[0]}" />
           </div>
           <div class="control-card">
             <div class="control-label">
               <span>Bass Width</span>
               <span class="control-value" id="val-shuf-width">${this.bandWidths[0].toFixed(2)}x</span>
             </div>
-            <input type="range" id="shufWidth" min="0" max="2" step="0.05" value="${this.bandWidths[0]}" />
+            <input type="range" id="shufWidth" min="0" max="2" step="0.05" value="${this.bandWidths[0]}"
+              role="slider" aria-label="Bass Width" aria-valuemin="0" aria-valuemax="2" aria-valuenow="${this.bandWidths[0]}" />
           </div>
         </div>
       `;
@@ -444,34 +588,69 @@ export class SonodsImagerElement extends HTMLElement {
       cutoffSlider.addEventListener('input', () => {
         const val = parseFloat(cutoffSlider.value);
         this.crossovers[0] = val;
+        cutoffSlider.setAttribute('aria-valuenow', val.toString());
         panel.querySelector('#val-shuf-cutoff')!.textContent = `${Math.round(val)} Hz`;
         this.emitParamChange('crossovers', { crossovers: [...this.crossovers] });
       });
+
+      const valCutoff = panel.querySelector('#val-shuf-cutoff') as HTMLElement;
+      this.attachNumericEntry(
+        valCutoff,
+        20,
+        400,
+        (val) => `${Math.round(val)} Hz`,
+        (val) => {
+          this.crossovers[0] = val;
+          if (cutoffSlider) {
+            cutoffSlider.value = val.toString();
+            cutoffSlider.setAttribute('aria-valuenow', val.toString());
+          }
+          this.emitParamChange('crossovers', { crossovers: [...this.crossovers] });
+        }
+      );
 
       const widthSlider = panel.querySelector('#shufWidth') as HTMLInputElement;
       widthSlider.addEventListener('input', () => {
         const val = parseFloat(widthSlider.value);
         this.bandWidths[0] = val;
+        widthSlider.setAttribute('aria-valuenow', val.toString());
         panel.querySelector('#val-shuf-width')!.textContent = `${val.toFixed(2)}x`;
         this.emitParamChange('bandWidth', { band: 0, value: val });
       });
+
+      const valWidth = panel.querySelector('#val-shuf-width') as HTMLElement;
+      this.attachNumericEntry(
+        valWidth,
+        0.0,
+        2.0,
+        (val) => `${val.toFixed(2)}x`,
+        (val) => {
+          this.bandWidths[0] = val;
+          if (widthSlider) {
+            widthSlider.value = val.toString();
+            widthSlider.setAttribute('aria-valuenow', val.toString());
+          }
+          this.emitParamChange('bandWidth', { band: 0, value: val });
+        }
+      );
     } else if (this.activeTab === 'matrix') {
       panel.innerHTML = `
         <div class="control-grid">
           <div class="control-card">
             <div class="control-label"><span>Mid Solo</span></div>
-            <button class="toggle-btn ${this.soloMid ? 'active' : ''}" id="soloMidBtn">${this.soloMid ? 'SOLO MID (ON)' : 'SOLO MID (OFF)'}</button>
+            <button class="toggle-btn ${this.soloMid ? 'active' : ''}" id="soloMidBtn" role="button" aria-label="Solo Mid Channel" aria-pressed="${this.soloMid}">${this.soloMid ? 'SOLO MID (ON)' : 'SOLO MID (OFF)'}</button>
           </div>
           <div class="control-card">
             <div class="control-label"><span>Side Solo</span></div>
-            <button class="toggle-btn ${this.soloSide ? 'active' : ''}" id="soloSideBtn">${this.soloSide ? 'SOLO SIDE (ON)' : 'SOLO SIDE (OFF)'}</button>
+            <button class="toggle-btn ${this.soloSide ? 'active' : ''}" id="soloSideBtn" role="button" aria-label="Solo Side Channel" aria-pressed="${this.soloSide}">${this.soloSide ? 'SOLO SIDE (ON)' : 'SOLO SIDE (OFF)'}</button>
           </div>
           <div class="control-card">
             <div class="control-label">
               <span>Asymmetry</span>
               <span class="control-value" id="val-matrix-asym">${(this.asymmetry >= 0 ? '+' : '') + this.asymmetry.toFixed(2)}</span>
             </div>
-            <input type="range" id="matrixAsym" min="-1" max="1" step="0.05" value="${this.asymmetry}" />
+            <input type="range" id="matrixAsym" min="-1" max="1" step="0.05" value="${this.asymmetry}"
+              role="slider" aria-label="Matrix Asymmetry Balance" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="${this.asymmetry}" />
           </div>
         </div>
       `;
@@ -496,10 +675,107 @@ export class SonodsImagerElement extends HTMLElement {
       asymSlider.addEventListener('input', () => {
         const val = parseFloat(asymSlider.value);
         this.asymmetry = val;
+        asymSlider.setAttribute('aria-valuenow', val.toString());
         panel.querySelector('#val-matrix-asym')!.textContent = (val >= 0 ? '+' : '') + val.toFixed(2);
         this.emitParamChange('asymmetry', { value: val });
       });
+
+      const valAsym = panel.querySelector('#val-matrix-asym') as HTMLElement;
+      this.attachNumericEntry(
+        valAsym,
+        -1.0,
+        1.0,
+        (val) => (val >= 0 ? '+' : '') + val.toFixed(2),
+        (val) => {
+          this.asymmetry = val;
+          if (asymSlider) {
+            asymSlider.value = val.toString();
+            asymSlider.setAttribute('aria-valuenow', val.toString());
+          }
+          this.emitParamChange('asymmetry', { value: val });
+        }
+      );
     }
+  }
+
+  private attachNumericEntry(
+    el: HTMLElement | null,
+    min: number,
+    max: number,
+    format: (val: number) => string,
+    onCommit: (newVal: number) => void
+  ) {
+    if (!el) return;
+    el.setAttribute('tabindex', '0');
+    el.setAttribute('title', 'Click or double-click to edit value');
+    el.style.cursor = 'pointer';
+
+    const startEdit = () => {
+      if (el.querySelector('input')) return; // Already editing
+      const currentText = el.textContent || '';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'inline-numeric-input';
+      input.value = currentText.replace(/[^\d.\-+]/g, ''); // Extract numeric portion
+      el.innerHTML = '';
+      el.appendChild(input);
+      input.focus();
+      if (input.select) input.select();
+
+      let committed = false;
+
+      const commit = () => {
+        if (committed) return;
+        committed = true;
+        const raw = input.value.trim();
+        let parsed = NaN;
+        if (raw.endsWith('%')) {
+          parsed = parseFloat(raw) / 100;
+        } else {
+          parsed = parseFloat(raw);
+        }
+        if (isNaN(parsed)) {
+          el.textContent = currentText;
+          return;
+        }
+        const clamped = Math.max(min, Math.min(max, parsed));
+        onCommit(clamped);
+        el.textContent = format(clamped);
+      };
+
+      const cancel = () => {
+        if (committed) return;
+        committed = true;
+        el.textContent = currentText;
+      };
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          commit();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          cancel();
+        }
+      });
+
+      input.addEventListener('blur', () => {
+        commit();
+      });
+    };
+
+    el.addEventListener('dblclick', startEdit);
+    el.addEventListener('click', () => {
+      if (document.activeElement === el) {
+        startEdit();
+      }
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        startEdit();
+      }
+    });
   }
 
   private emitParamChange(name: string, detail: any) {
