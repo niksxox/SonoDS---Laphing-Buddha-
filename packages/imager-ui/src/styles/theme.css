@@ -1,0 +1,16 @@
+:host {
+  --sonods-bg-dark: #070a13;
+  --sonods-panel-bg: #0d1322;
+  --sonods-card-bg: #141c2e;
+  --sonods-accent-cyan: #38bdf8;
+  --sonods-accent-green: #10b981;
+  --sonods-accent-amber: #f59e0b;
+  --sonods-accent-red: #ef4444;
+  --sonods-accent-purple: #a855f7;
+  --sonods-text-primary: #f8fafc;
+  --sonods-text-muted: #94a3b8;
+  --sonods-border: #1e293b;
+  --sonods-radius: 8px;
+  --sonods-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --sonods-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
