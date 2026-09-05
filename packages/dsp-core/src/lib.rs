@@ -19,6 +19,7 @@ pub mod stereoize;
 pub mod shuffler;
 pub mod asymmetry;
 pub mod recover_sides;
+pub mod wasm_api;
 
 #[cfg(test)]
 pub mod fuzz_tests;

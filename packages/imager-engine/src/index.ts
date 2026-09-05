@@ -1,6 +1,6 @@
 /**
  * @sonods/imager-engine
- * SonoDS Stereo Imager — wasm loader, AudioWorklet glue, telemetry.
- * Placeholder — implementation begins in Phase 2.
+ * SonoDS Stereo Imager — WASM loader, AudioWorklet integration, telemetry engine.
  */
-export const ENGINE_VERSION = '0.1.0';
+
+export { loadWasmModule, ImagerEngineWasm } from './loader.js';
